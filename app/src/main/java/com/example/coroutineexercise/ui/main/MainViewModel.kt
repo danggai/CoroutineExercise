@@ -27,8 +27,10 @@ class MainViewModel : ViewModel() {
             Log.e("B", "Done")
             launchC()
             Log.e("C", "Done")
-            Log.e(tag, "Done")
-            lvToastEvent.value = "coroutine " + tag + " Done"
+            withContext(Dispatchers.Main) {
+                Log.e(tag, "Done")
+                lvToastEvent.value = "coroutine " + tag + " Done"
+            }
         }.start()
     }
 
