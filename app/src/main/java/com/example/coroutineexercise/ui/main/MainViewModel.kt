@@ -24,9 +24,17 @@ class MainViewModel : ViewModel() {
             true
         }
         val deferredTwo = async {
-            launchAll("ViewModel Init2")
-            launchAll("ViewModel Init3")
+            launchAll("ViewModel Init2-1")
+            launchAll("ViewModel Init2-2")
             true
+        }
+        val deferredThree = launch {
+            launchAll2("ViewModel Init3-1")
+            launchAll2("ViewModel Init3-2")
+        }
+        val deferredFour = launch {
+            launchAll3("ViewModel Init4-1")
+            launchAll3("ViewModel Init4-2")
         }
 
         if (deferredOne.await() && deferredTwo.await()) Log.e("init", "Done")
@@ -44,6 +52,26 @@ class MainViewModel : ViewModel() {
                 lvToastMsg.value = "coroutine \"" + tag + "\" Done"
                 Log.e(tag, "Done")
             }
+
+    private suspend fun launchAll2(tag: String) =
+            coroutineScope {
+                Log.e(tag, "Start")
+                launchA()
+                launchB()
+                launchC()
+                lvToastMsg.value = "coroutine \"" + tag + "\" Done"
+                Log.e(tag, "Done")
+            }
+
+    private suspend fun launchAll3(tag: String) {
+        Log.e(tag, "Start")
+        launchA()
+        launchB()
+        launchC()
+        lvToastMsg.value = "coroutine \"" + tag + "\" Done"
+        Log.e(tag, "Done")
+    }
+
     private suspend fun launchA() {
         Log.e("A", "Start")
         delay(500L)
