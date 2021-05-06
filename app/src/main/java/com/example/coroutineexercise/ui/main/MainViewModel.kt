@@ -12,30 +12,38 @@ class MainViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            launchAll("when ViewModel Init1")
-        }
-        viewModelScope.launch {
-            launchAll("when ViewModel Init2")
-            launchAll("when ViewModel Init3")
+            init()
         }
     }
 
-    private fun launchAllWhenViewModelInit() {
-        launchAll(Dispatchers.Main, "when ViewModel Init")
-    }
+    private suspend fun init() = coroutineScope {
+        Log.e("init", "Start")
+
+        val deferredOne = async {
+            launchAll("ViewModel Init1")
+            true
+        }
+        val deferredTwo = async {
+            launchAll("ViewModel Init2")
+            launchAll("ViewModel Init3")
+            true
+        }
+
+        if (deferredOne.await() && deferredTwo.await()) Log.e("init", "Done")
+        else Log.e("init", "Failed")
     }
 
-    private suspend fun launchAll(tag: String) {
-        viewModelScope.async {
-            Log.e(tag, "Start")
-            launchA()
-            launchB()
-            launchC()
-            lvToastMsg.value = "coroutine " + tag + " Done"
-            Log.e(tag, "Done")
-        }.await()
     }
 
+    private suspend fun launchAll(tag: String) =
+            withContext(viewModelScope.coroutineContext) {
+                Log.e(tag, "Start")
+                launchA()
+                launchB()
+                launchC()
+                lvToastMsg.value = "coroutine \"" + tag + "\" Done"
+                Log.e(tag, "Done")
+            }
     private suspend fun launchA() {
         Log.e("A", "Start")
         delay(500L)
