@@ -3,14 +3,21 @@ package com.example.coroutineexercise.ui.main
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 
 class MainViewModel : ViewModel() {
 
-    var lvToastEvent: MutableLiveData<String> = MutableLiveData("")
+    var lvToastMsg: MutableLiveData<String> = MutableLiveData("")
 
     init {
-        launchAllWhenViewModelInit()
+        viewModelScope.launch {
+            launchAll("when ViewModel Init1")
+        }
+        viewModelScope.launch {
+            launchAll("when ViewModel Init2")
+            launchAll("when ViewModel Init3")
+        }
     }
 
     private fun launchAllWhenViewModelInit() {
@@ -18,37 +25,32 @@ class MainViewModel : ViewModel() {
     }
     }
 
-    private fun launchAll(dispatcher: CoroutineDispatcher, tag: String) {
-        CoroutineScope(dispatcher).launch {
+    private suspend fun launchAll(tag: String) {
+        viewModelScope.async {
             Log.e(tag, "Start")
             launchA()
-            Log.e("A", "Done")
             launchB()
-            Log.e("B", "Done")
             launchC()
-            Log.e("C", "Done")
-            withContext(Dispatchers.Main) {
-                Log.e(tag, "Done")
-                lvToastEvent.value = "coroutine " + tag + " Done"
-            }
-        }.start()
+            lvToastMsg.value = "coroutine " + tag + " Done"
+            Log.e(tag, "Done")
+        }.await()
     }
 
     private suspend fun launchA() {
         Log.e("A", "Start")
         delay(500L)
-        Log.e("A", "Completing")
+        Log.e("A", "Complete")
     }
 
     private suspend fun launchB() {
         Log.e("B", "Start")
         delay(500L)
-        Log.e("B", "Completing")
+        Log.e("B", "Complete")
     }
 
     private suspend fun launchC() {
         Log.e("C", "Start")
         delay(500L)
-        Log.e("C", "Completing")
+        Log.e("C", "Complete")
     }
 }

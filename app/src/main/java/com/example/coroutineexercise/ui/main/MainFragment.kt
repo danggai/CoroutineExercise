@@ -30,7 +30,7 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         // TODO: Use the ViewModel
 
-        viewModel.lvToastEvent.observe(viewLifecycleOwner, Observer {
+        viewModel.lvToastMsg.observe(viewLifecycleOwner, Observer {
             if (!it.isNullOrBlank()) Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
         })
     }
