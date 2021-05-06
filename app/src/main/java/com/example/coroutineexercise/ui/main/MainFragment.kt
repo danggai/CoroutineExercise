@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.lifecycle.Observer
 import com.example.coroutineexercise.R
 
 class MainFragment : Fragment() {
@@ -27,6 +29,10 @@ class MainFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         // TODO: Use the ViewModel
+
+        viewModel.lvToastEvent.observe(viewLifecycleOwner, Observer {
+            if (!it.isNullOrBlank()) Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+        })
     }
 
 }

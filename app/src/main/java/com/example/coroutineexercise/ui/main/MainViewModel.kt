@@ -1,39 +1,50 @@
 package com.example.coroutineexercise.ui.main
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 class MainViewModel : ViewModel() {
 
+    var lvToastEvent: MutableLiveData<String> = MutableLiveData("")
+
     init {
-        launchAll()
+        launchAllWhenViewModelInit()
     }
 
-    private fun launchAll() = runBlocking {
-        Log.e("All", "Start")
-        launchA()
-        Log.e("A", "Done")
-        launchB()
-        Log.e("B", "Done")
-        launchC()
-        Log.e("C", "Done")
+    private fun launchAllWhenViewModelInit() {
+        launchAll(Dispatchers.Main, "when ViewModel Init")
+    }
     }
 
-    suspend fun launchA() {
+    private fun launchAll(dispatcher: CoroutineDispatcher, tag: String) {
+        CoroutineScope(dispatcher).launch {
+            Log.e(tag, "Start")
+            launchA()
+            Log.e("A", "Done")
+            launchB()
+            Log.e("B", "Done")
+            launchC()
+            Log.e("C", "Done")
+            Log.e(tag, "Done")
+            lvToastEvent.value = "coroutine " + tag + " Done"
+        }.start()
+    }
+
+    private suspend fun launchA() {
         Log.e("A", "Start")
         delay(500L)
         Log.e("A", "Completing")
     }
 
-    suspend fun launchB() {
+    private suspend fun launchB() {
         Log.e("B", "Start")
         delay(500L)
         Log.e("B", "Completing")
     }
 
-    suspend fun launchC() {
+    private suspend fun launchC() {
         Log.e("C", "Start")
         delay(500L)
         Log.e("C", "Completing")
